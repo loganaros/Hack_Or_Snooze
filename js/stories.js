@@ -19,20 +19,32 @@ async function getAndShowStoriesOnStart() {
  * Returns the markup for the story.
  */
 
-function generateStoryMarkup(story) {
+function generateStoryMarkup(story, userStory = false) {
   // console.debug("generateStoryMarkup", story);
 
-  const hostName = story.getHostName();
+  const showStar = Boolean(currentUser);
+
   return $(`
       <li id="${story.storyId}">
+        <div>
+        ${showStar ? getStarHTML(story, currentUser) : ""}
         <a href="${story.url}" target="a_blank" class="story-link">
-          ${story.title}
+        ${story.title}
         </a>
-        <small class="story-hostname">(${hostName})</small>
+        <small class="story-hostname">(${story.url})</small>
         <small class="story-author">by ${story.author}</small>
+        ${userStory ? "<small class='delete-btn'>delete</small>" : ""}
         <small class="story-user">posted by ${story.username}</small>
+        </div>
       </li>
     `);
+}
+
+function getStarHTML(story, user) {
+  let favorite = user.isFavorite(story);
+  let starClass = favorite ? "fas" : "far"
+
+  return `<span class="star"><i id="favIcon" class="${starClass} fa-star"></i></span>`;
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
@@ -50,3 +62,35 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
+
+function putMyStoriesOnPage() {
+  $myStoriesList.empty();
+  for(let story of currentUser.ownStories) {
+    const $story = generateStoryMarkup(story, true);
+    $myStoriesList.append($story);
+  }
+}
+
+async function submitStory(evt) {
+  evt.preventDefault();
+
+  const title = $("#story-title").val();
+  const author = $("#story-author").val();
+  const url = $("#story-url").val();
+  const storyData = { title, author, url };
+
+  const story = await storyList.addStory(currentUser, storyData);
+
+  $submitStoryForm.hide();
+  $submitStoryForm.trigger("reset");
+  getAndShowStoriesOnStart();
+}
+
+$submitStoryForm.on("submit", submitStory);
+
+async function toggleFavoriteStory(evt) {
+  $(evt.target).toggleClass("far fas");
+  await currentUser.toggleFavorite(storyList.stories.find(s => s.storyId == evt.target.closest("li").id));
+}
+
+$body.on("click", ".star", toggleFavoriteStory);

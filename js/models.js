@@ -75,6 +75,7 @@ class StoryList {
 
   async addStory(user, { title, author, url }) {
     let res = await axios.post(`${BASE_URL}/stories`, { token: user.loginToken, story: { title, author, url } });
+    user.ownStories.unshift(res.data.story);
     return new Story(res.data.story);
   }
 }
@@ -193,5 +194,24 @@ class User {
       console.error("loginViaStoredCredentials failed", err);
       return null;
     }
+  }
+
+  async toggleFavorite(story) {
+
+    const method = this.isFavorite(story) ? "DELETE" : "POST";
+
+    const token = this.loginToken;
+    let res = await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: method,
+      data: { token },
+    });
+    this.favorites = res.data.user.favorites.map(s => new Story(s));
+    return res;
+    // await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, this.loginToken);
+  }
+
+  isFavorite(story) {
+    return this.favorites.some(favStory => favStory.storyId === story.storyId);
   }
 }

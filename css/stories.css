@@ -31,9 +31,22 @@
 }
 
 .story-author {
-  margin-left: 2em;
+  /* margin-left: 2em; */
 }
 
 .story-user {
   display: block;
+}
+
+.delete-btn {
+  color: red;
+}
+
+.delete-btn:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.star:hover {
+  cursor: pointer;
 }
