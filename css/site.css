@@ -3,7 +3,7 @@
 body {
   font-family: Arimo, sans-serif;
   margin: 8px 7.5vw;
-  background-image: linear-gradient(to right, rgb(168, 174, 252), pink, rgb(168, 174, 252));
+  background-image: linear-gradient(to right, rgb(168, 174, 252), green, rgb(168, 174, 252));
 }
 
 h1 {
