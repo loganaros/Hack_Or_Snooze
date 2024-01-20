@@ -3,6 +3,7 @@
 body {
   font-family: Arimo, sans-serif;
   margin: 8px 7.5vw;
+  background-image: linear-gradient(to right, rgb(168, 174, 252), pink, rgb(168, 174, 252));
 }
 
 h1 {
@@ -29,6 +30,11 @@ a:hover {
   text-decoration: underline;
 }
 
+li {
+  padding-bottom: .5em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+}
+
 
 /* Site layout */
 
@@ -38,6 +44,7 @@ a:hover {
   flex-direction: column;
   align-self: center;
   background-color: #f6f6ef;
+  border-radius: 0 0 3px 3px;
 }
 
 .hidden {

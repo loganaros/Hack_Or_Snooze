@@ -26,19 +26,28 @@ function generateStoryMarkup(story, userStory = false) {
 
   return $(`
       <li id="${story.storyId}">
-        <div>
         ${showStar ? getStarHTML(story, currentUser) : ""}
-        <a href="${story.url}" target="a_blank" class="story-link">
-        ${story.title}
-        </a>
-        <small class="story-hostname">(${story.url})</small>
-        <small class="story-author">by ${story.author}</small>
-        ${userStory ? "<small class='delete-btn'>delete</small>" : ""}
-        <small class="story-user">posted by ${story.username}</small>
-        </div>
+          <div class="story-container">
+            <div class="story-title">
+              <a href="${story.url}" target="a_blank" class="story-link">
+              ${story.title}
+              </a>
+              <small class="story-hostname">(${story.url})</small>
+            </div>
+            ${userStory ? "<small class='delete-btn'>delete</small>" : ""}
+            <div class="story-author">by ${story.author}</div>
+            <div class="story-user">posted by ${story.username}</div>
+          </div>
       </li>
     `);
 }
+
+async function deleteStory(evt) {
+  await storyList.removeStory(currentUser, evt.target.closest("li").id);
+  await putMyStoriesOnPage();
+}
+
+$body.on("click", ".delete-btn", deleteStory);
 
 function getStarHTML(story, user) {
   let favorite = user.isFavorite(story);
@@ -65,9 +74,17 @@ function putStoriesOnPage() {
 
 function putMyStoriesOnPage() {
   $myStoriesList.empty();
-  for(let story of currentUser.ownStories) {
+  for (let story of currentUser.ownStories) {
     const $story = generateStoryMarkup(story, true);
     $myStoriesList.append($story);
+  }
+}
+
+function putFavStoriesOnPage() {
+  $favStoriesList.empty();
+  for (let story of currentUser.favorites) {
+    const $story = generateStoryMarkup(story);
+    $favStoriesList.append($story);
   }
 }
 
